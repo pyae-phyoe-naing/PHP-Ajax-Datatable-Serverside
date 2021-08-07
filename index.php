@@ -139,7 +139,7 @@
             });
         });
 
-        $(document).on('submit','#updateUserForm',function(event){
+        $(document).on('submit', '#updateUserForm', function(event) {
             event.preventDefault();
             var id = $('#id').val();
             var trid = $('#trid').val();
@@ -147,26 +147,56 @@
             var email = $('#_email').val();
             var phone = $('#_phone').val();
             var city = $('#_city').val();
-            
+
             $.ajax({
-                url : 'update_user.php',
-                data:{id:id,name:name,email:email,phone:phone,city:city},
-                type : 'post',
-                success : function(response){
+                url: 'update_user.php',
+                data: {
+                    id: id,
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    city: city
+                },
+                type: 'post',
+                success: function(response) {
                     var data = JSON.parse(response);
                     status = data.status;
-                    if(status == 'success'){
+                    if (status == 'success') {
                         var table = $('#datatable').DataTable();
-                        var button = '<a href="javascript:void();" data-id="'+id+'" class="editBtn btn btn-sm btn-info">Edit</a> <a href="javascript:void();" data-id="'+id+'" class="btn btn-sm btn-danger mr-3" >Delete</a>';
-                        var row = table.row("[id='"+trid+"']");
-                        row.row("[id='"+trid+"']").data([id,name,email,phone,city,button]);
+                        var button = '<a href="javascript:void();" data-id="' + id + '" class="editBtn btn btn-sm btn-info">Edit</a> <a href="javascript:void();" data-id="' + id + '" class="deleteBtn btn btn-sm btn-danger mr-3" >Delete</a>';
+                        var row = table.row("[id='" + trid + "']");
+                        row.row("[id='" + trid + "']").data([id, name, email, phone, city, button]);
                         $('#editUserModal').modal('hide');
-                    }else{
+                    } else {
                         alert('Fail');
                     }
                 }
             })
         })
+
+        // Delete User
+        $(document).on('click', '.deleteBtn', function(event) {
+            var id = $(this).data('id'); //data-id=''
+            if (confirm('Are you sure delete?')) {
+                $.ajax({
+                    url: 'delete_user.php',
+                    data: {
+                        id: id
+                    },
+                    type: 'post',
+                    success: function(response) {
+                        var data = JSON.parse(response);
+                        var status = data.status;
+                        if (status == 'success') {
+                            $('#' + id).closest('tr').remove();
+                        } else {
+                            alert('failed');
+                        }
+                    }
+                });
+            }
+
+        });
     </script>
     <!-- Add User Modal  -->
     <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
